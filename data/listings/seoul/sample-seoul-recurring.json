@@ -1,0 +1,39 @@
+{
+  "id": "sample-seoul-recurring",
+  "city": "seoul",
+  "languages": [
+    "ko",
+    "en"
+  ],
+  "title": {
+    "ko": "[SAMPLE - not a real listing] 예시 주간 무료 식료품 나눔",
+    "en": "[SAMPLE - not a real listing] Example weekly free pantry"
+  },
+  "what_is_free": {
+    "ko": "예시 보관 식품",
+    "en": "Sample shelf-stable food"
+  },
+  "who_can_attend": {
+    "ko": "누구나",
+    "en": "Anyone"
+  },
+  "where": {
+    "venue": {
+      "ko": "가상의 예시 회관",
+      "en": "Imaginary Example Hall"
+    },
+    "address": {
+      "ko": "가상시 예시로 0",
+      "en": "0 Nowhere Street, Imaginaryville"
+    }
+  },
+  "when": {
+    "start": "2026-11-07T10:00:00+09:00",
+    "end": "2026-11-07T12:00:00+09:00",
+    "recurrence": "Every Saturday"
+  },
+  "expiry_date": "2026-11-09",
+  "evidence": "Community-confirmed",
+  "state": "Current",
+  "last_checked": "2026-10-10"
+}

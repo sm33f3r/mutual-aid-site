@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+id.json
+*-keypair.json

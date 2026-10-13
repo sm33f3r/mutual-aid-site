@@ -1,0 +1,22 @@
+{
+  "name": "mutual-aid-site",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "tsx scripts/validate-data.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check:no-samples": "tsx scripts/check-no-samples.ts"
+  },
+  "dependencies": {
+    "astro": "^7.3.8",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.4"
+  }
+}

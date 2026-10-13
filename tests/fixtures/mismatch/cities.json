@@ -1,0 +1,16 @@
+[
+  {
+    "id": "seoul",
+    "name": { "ko": "서울", "en": "Seoul" },
+    "primaryLanguage": "ko",
+    "languages": ["ko", "en"],
+    "timezone": "Asia/Seoul"
+  },
+  {
+    "id": "seattle",
+    "name": { "en": "Seattle" },
+    "primaryLanguage": "en",
+    "languages": ["en"],
+    "timezone": "America/Los_Angeles"
+  }
+]

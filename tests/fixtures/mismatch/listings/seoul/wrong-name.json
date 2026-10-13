@@ -1,0 +1,38 @@
+{
+  "id": "sample-seoul-event",
+  "city": "seattle",
+  "languages": [
+    "ko",
+    "en"
+  ],
+  "title": {
+    "ko": "[SAMPLE - not a real listing] 예시 무료 옷 교환 행사",
+    "en": "[SAMPLE - not a real listing] Example free clothing swap"
+  },
+  "what_is_free": {
+    "ko": "구매 없이 가져갈 수 있는 예시 옷",
+    "en": "Free sample clothing, no purchase needed"
+  },
+  "who_can_attend": {
+    "ko": "누구나",
+    "en": "Anyone"
+  },
+  "where": {
+    "venue": {
+      "ko": "가상의 예시 회관",
+      "en": "Imaginary Example Hall"
+    },
+    "address": {
+      "ko": "가상시 예시로 0",
+      "en": "0 Nowhere Street, Imaginaryville"
+    }
+  },
+  "when": {
+    "start": "2026-11-07T14:00:00+09:00",
+    "end": "2026-11-07T16:00:00+09:00"
+  },
+  "expiry_date": "2026-11-07",
+  "evidence": "Source-confirmed",
+  "state": "Current",
+  "last_checked": "2026-10-10"
+}

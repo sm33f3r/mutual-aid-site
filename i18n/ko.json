@@ -1,0 +1,11 @@
+{
+  "site.name": "상호부조 DAO",
+  "evidence.Published": "공개 게시됨",
+  "evidence.Source-confirmed": "출처 확인됨",
+  "evidence.Community-confirmed": "커뮤니티 확인됨",
+  "state.Current": "현재",
+  "state.Disputed": "이의 제기됨",
+  "state.Hidden": "숨김",
+  "state.Expired": "만료됨",
+  "state.Removed": "삭제됨"
+}

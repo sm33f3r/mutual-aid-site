@@ -1,0 +1,42 @@
+{
+  "id": "sample-seoul-disputed",
+  "city": "seoul",
+  "languages": [
+    "ko",
+    "en"
+  ],
+  "title": {
+    "ko": "[SAMPLE - not a real listing] 예시 무료 공구 대여의 밤",
+    "en": "[SAMPLE - not a real listing] Example free tool library night"
+  },
+  "what_is_free": {
+    "ko": "예시 대여 공구",
+    "en": "Sample borrowable tools"
+  },
+  "who_can_attend": {
+    "ko": "누구나",
+    "en": "Anyone"
+  },
+  "where": {
+    "venue": {
+      "ko": "가상의 예시 회관",
+      "en": "Imaginary Example Hall"
+    },
+    "address": {
+      "ko": "가상시 예시로 0",
+      "en": "0 Nowhere Street, Imaginaryville"
+    }
+  },
+  "when": {
+    "start": "2026-11-14T18:00:00+09:00",
+    "end": "2026-11-14T20:00:00+09:00"
+  },
+  "expiry_date": "2026-11-14",
+  "evidence": "Published",
+  "state": "Disputed",
+  "last_checked": "2026-10-10",
+  "grimple_note": {
+    "ko": "예시 메모: 내용에 이의가 제기됨.",
+    "en": "Sample note: details are disputed."
+  }
+}

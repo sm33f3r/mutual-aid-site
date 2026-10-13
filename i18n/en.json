@@ -1,0 +1,11 @@
+{
+  "site.name": "Mutual Aid DAO",
+  "evidence.Published": "Published",
+  "evidence.Source-confirmed": "Source-confirmed",
+  "evidence.Community-confirmed": "Community-confirmed",
+  "state.Current": "Current",
+  "state.Disputed": "Disputed",
+  "state.Hidden": "Hidden",
+  "state.Expired": "Expired",
+  "state.Removed": "Removed"
+}
