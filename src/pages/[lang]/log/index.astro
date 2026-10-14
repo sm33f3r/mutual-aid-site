@@ -1,0 +1,44 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../../layouts/Base.astro";
+import { getPages, getSiteData } from "../../../lib/data";
+import { formatDate } from "../../../lib/format";
+import { t } from "../../../lib/i18n";
+import { hasPage, listingPath, pagesOfKind } from "../../../lib/routes";
+
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "log").map((p) => ({ params: { lang: p.lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: string };
+const data = getSiteData();
+const entries = [...data.log].sort((a, b) => b.date.localeCompare(a.date));
+// Link a listing id only when a page for that listing is built.
+const linkFor = (id: string | undefined): string | undefined => {
+  const e = data.listings.find((x) => x.listing.id === id);
+  return e && hasPage(e.effective) ? listingPath(lang, e.listing.city, e.listing.id) : undefined;
+};
+---
+<Base lang={lang} title={t(lang, "log.title")} description={t(lang, "log.description")} suffix="log/">
+  <h1>{t(lang, "log.heading")}</h1>
+  {entries.length === 0 ? <p>{t(lang, "log.empty")}</p> : (
+    <ul class="cards">
+      {entries.map((e) => {
+        const href = linkFor(e.listing_id);
+        return (
+          <li class="card">
+            <p class="muted"><time datetime={e.date}>{formatDate(e.date, lang)}</time></p>
+            <p><strong>{t(lang, `log.action.${e.action}`)}</strong></p>
+            <p>{e.reason}</p>
+            <p class="muted">
+              {e.listing_id !== undefined ? (
+                <>{t(lang, "log.listing")}: {href ? <a href={href}>{e.listing_id}</a> : e.listing_id}</>
+              ) : (
+                <>{t(lang, "log.comment")}: {e.comment_ref}</>
+              )}
+            </p>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+</Base>

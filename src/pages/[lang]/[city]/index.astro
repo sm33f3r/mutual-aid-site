@@ -1,0 +1,28 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../../layouts/Base.astro";
+import ListingCard from "../../../components/ListingCard.astro";
+import { currentListings, getPages, getSiteData } from "../../../lib/data";
+import { t } from "../../../lib/i18n";
+import { archivePath, pagesOfKind } from "../../../lib/routes";
+import { pickText } from "../../../lib/text";
+
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "city").map((p) => ({ params: { lang: p.lang, city: p.city } }))) satisfies GetStaticPaths;
+
+const { lang, city: cityId } = Astro.params as { lang: string; city: string };
+const data = getSiteData();
+const city = data.cities.find((c) => c.id === cityId)!;
+const cityName = pickText(city.name, lang, city.primaryLanguage).text;
+const items = currentListings(data, cityId);
+---
+<Base lang={lang} title={cityName} description={t(lang, "city.description", { city: cityName })} suffix={`${cityId}/`}>
+  <h1>{cityName}</h1>
+  <h2>{t(lang, "city.current")}</h2>
+  {items.length === 0 ? <p>{t(lang, "city.empty")}</p> : (
+    <ul class="cards">
+      {items.map((e) => <ListingCard lang={lang} city={city} listing={e.listing} effective={e.effective} />)}
+    </ul>
+  )}
+  <p><a href={archivePath(lang, cityId)}>{t(lang, "city.archive_link")}</a></p>
+</Base>

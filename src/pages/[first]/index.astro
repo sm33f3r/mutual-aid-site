@@ -1,0 +1,57 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../layouts/Base.astro";
+import "../../styles/global.css";
+import { cityPath, pagesOfKind } from "../../lib/routes";
+import { getPages, getSiteData } from "../../lib/data";
+import { t } from "../../lib/i18n";
+import { pickText } from "../../lib/text";
+
+// One file serves both /<lang>/ (language home) and /<city>/ (redirect), because both are a single dynamic segment.
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "lang-home", "city-redirect").map((page) => ({
+    params: { first: page.kind === "lang-home" ? page.lang : page.city },
+    props: { kind: page.kind, lang: page.lang as string, cityId: page.city },
+  }))) satisfies GetStaticPaths;
+
+const { kind, lang, cityId } = Astro.props;
+const data = getSiteData();
+---
+{kind === "lang-home" ? (
+  <Base lang={lang} title={t(lang, "home.title")} description={t(lang, "home.description")} suffix="">
+    <h1>{t(lang, "home.heading")}</h1>
+    <p>{t(lang, "home.intro")}</p>
+    <h2>{t(lang, "home.cities")}</h2>
+    <ul class="cards">
+      {data.cities.map((c) => {
+        const target = c.languages.includes(lang) ? lang : c.primaryLanguage;
+        return (
+          <li class="card">
+            <h3><a href={cityPath(target, c.id)} hreflang={target}>{pickText(c.name, lang, c.primaryLanguage).text}</a></h3>
+          </li>
+        );
+      })}
+    </ul>
+    <ul class="plain links">
+      <li><a href={`/${lang}/news/`}>{t(lang, "nav.news")}</a></li>
+      <li><a href={`/${lang}/faq/`}>{t(lang, "nav.faq")}</a></li>
+      <li><a href={`/${lang}/submit/`}>{t(lang, "nav.submit")}</a></li>
+      <li><a href={`/${lang}/log/`}>{t(lang, "nav.log")}</a></li>
+    </ul>
+  </Base>
+) : (
+  <html lang={lang}>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>{t(lang, "redirect.title")}</title>
+      <meta name="robots" content="noindex" />
+      <meta http-equiv="refresh" content={`0; url=${cityPath(lang, cityId as string)}`} />
+    </head>
+    <body>
+      <main>
+        <p><a href={cityPath(lang, cityId as string)}>{t(lang, "redirect.text", { city: cityId as string })}</a></p>
+      </main>
+    </body>
+  </html>
+)}

@@ -1,0 +1,20 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../../layouts/Base.astro";
+import { telegramUrl } from "../../../config/site";
+import { getPages } from "../../../lib/data";
+import { t } from "../../../lib/i18n";
+import { pagesOfKind } from "../../../lib/routes";
+
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "submit").map((p) => ({ params: { lang: p.lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: string };
+---
+<Base lang={lang} title={t(lang, "submit.title")} description={t(lang, "submit.description")} suffix="submit/">
+  <h1>{t(lang, "submit.heading")}</h1>
+  <p>{t(lang, "submit.body")}</p>
+  {telegramUrl !== "" && (
+    <p><a href={telegramUrl} target="_blank" rel="nofollow noopener noreferrer">{t(lang, "submit.telegram")}</a></p>
+  )}
+</Base>

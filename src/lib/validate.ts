@@ -2,9 +2,9 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import type { ZodType } from "zod";
 import { CitiesSchema, type City } from "../schemas/city";
-import { createListingSchema } from "../schemas/listing";
-import { LogEntrySchema } from "../schemas/log";
-import { NewsPostSchema } from "../schemas/news";
+import { createListingSchema, type Listing } from "../schemas/listing";
+import { LogEntrySchema, type LogEntry } from "../schemas/log";
+import { NewsPostSchema, type NewsPost } from "../schemas/news";
 
 export interface Failure {
   file: string;
@@ -65,6 +65,13 @@ export function loadCities(dataDir: string): City[] {
   return res.success ? res.data : [];
 }
 
+export interface LoadedData {
+  cities: City[];
+  listings: Listing[];
+  log: LogEntry[];
+  news: NewsPost[];
+}
+
 /**
  * Validates every data file under `dataDir`. Paths in failures are relative to `rootDir`.
  * `today` is one date for every city, or a map of city id to that city's local date.
@@ -74,7 +81,17 @@ export function validateAll(
   today: string | Record<string, string>,
   rootDir: string = process.cwd(),
 ): Failure[] {
+  return loadAll(dataDir, today, rootDir).failures;
+}
+
+/** Same checks as validateAll, and also returns the parsed data (only the files that passed). */
+export function loadAll(
+  dataDir: string,
+  today: string | Record<string, string>,
+  rootDir: string = process.cwd(),
+): { failures: Failure[]; data: LoadedData } {
   const failures: Failure[] = [];
+  const data: LoadedData = { cities: [], listings: [], log: [], news: [] };
 
   const citiesPath = join(dataDir, "cities.json");
   let cityIds: string[] = [];
@@ -83,6 +100,7 @@ export function validateAll(
   } else {
     const cities = check(citiesPath, CitiesSchema, rootDir, failures) as { id: string }[] | undefined;
     cityIds = cities?.map((c) => c.id) ?? [];
+    data.cities = (cities as City[] | undefined) ?? [];
   }
 
   const todayFor = (cityId: string): string =>
@@ -105,15 +123,19 @@ export function validateAll(
       const listingSchema = createListingSchema({ today: todayFor(folder), cityIds });
       for (const name of jsonFiles(folderPath, rootDir, failures)) {
         const path = join(folderPath, name);
-        const data = check(path, listingSchema, rootDir, failures) as { id: string; city: string } | undefined;
-        if (!data) continue;
+        const parsed = check(path, listingSchema, rootDir, failures) as Listing | undefined;
+        if (!parsed) continue;
         const file = relative(rootDir, path);
-        if (data.city !== folder) {
-          failures.push({ file, reason: `city: '${data.city}' does not match folder '${folder}'` });
+        let ok = true;
+        if (parsed.city !== folder) {
+          failures.push({ file, reason: `city: '${parsed.city}' does not match folder '${folder}'` });
+          ok = false;
         }
-        if (`${data.id}.json` !== name) {
-          failures.push({ file, reason: `id: '${data.id}' does not match filename '${name}'` });
+        if (`${parsed.id}.json` !== name) {
+          failures.push({ file, reason: `id: '${parsed.id}' does not match filename '${name}'` });
+          ok = false;
         }
+        if (ok) data.listings.push(parsed);
       }
     }
   }
@@ -123,8 +145,13 @@ export function validateAll(
     ["news", NewsPostSchema],
   ] as const) {
     const dir = join(dataDir, sub);
-    for (const name of jsonFiles(dir, rootDir, failures)) check(join(dir, name), schema, rootDir, failures);
+    for (const name of jsonFiles(dir, rootDir, failures)) {
+      const parsed = check(join(dir, name), schema, rootDir, failures);
+      if (parsed === undefined) continue;
+      if (sub === "log") data.log.push(parsed as LogEntry);
+      else data.news.push(parsed as NewsPost);
+    }
   }
 
-  return failures;
+  return { failures, data };
 }

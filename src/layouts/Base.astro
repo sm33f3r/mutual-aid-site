@@ -1,0 +1,69 @@
+---
+import "../styles/global.css";
+import { defaultLanguage, indexable, languages, siteUrl, whitepaperEnabled } from "../config/site";
+import { t } from "../lib/i18n";
+import { langPath, sectionPath } from "../lib/routes";
+
+interface Props {
+  lang: string;
+  title: string;
+  description: string;
+  /** Path after /<lang>/ (e.g. "seoul/archive/"), used for the language switcher and hreflang. "" for the home page. */
+  suffix: string;
+}
+const { lang, title, description, suffix } = Astro.props;
+
+const pathFor = (l: string) => `/${l}/${suffix}`;
+const abs = (path: string) => (siteUrl ? new URL(path, siteUrl).href : path);
+const siteName = t(lang, "site.name");
+const fullTitle = `${title} · ${siteName}`;
+const nav = [
+  { key: "news", label: t(lang, "nav.news") },
+  { key: "faq", label: t(lang, "nav.faq") },
+  { key: "submit", label: t(lang, "nav.submit") },
+  { key: "log", label: t(lang, "nav.log") },
+  ...(whitepaperEnabled ? [{ key: "whitepaper", label: t(lang, "nav.whitepaper") }] : []),
+];
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {!indexable && <meta name="robots" content="noindex" />}
+    {siteUrl && <link rel="canonical" href={abs(pathFor(lang))} />}
+    {languages.map((l) => <link rel="alternate" hreflang={l} href={abs(pathFor(l))} />)}
+    <link rel="alternate" hreflang="x-default" href={abs(pathFor(defaultLanguage))} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="bar">
+        <a class="brand" href={langPath(lang)}>{siteName}</a>
+        <ul class="lang-switch" aria-label={t(lang, "lang.switch")}>
+          {languages.map((l) => (
+            <li>
+              {l === lang ? (
+                <span aria-current="true">{t(l, "lang.name." + l)}</span>
+              ) : (
+                <a href={pathFor(l)} lang={l} hreflang={l}>{t(l, "lang.name." + l)}</a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <nav aria-label={t(lang, "nav.label")}>
+        <ul>
+          {nav.map((n) => <li><a href={sectionPath(lang, n.key)}>{n.label}</a></li>)}
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>{t(lang, "footer.note")}</p>
+    </footer>
+  </body>
+</html>

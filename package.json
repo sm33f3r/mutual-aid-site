@@ -4,10 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "validate": "tsx scripts/validate-data.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check:no-samples": "tsx scripts/check-no-samples.ts"
+    "check:no-samples": "tsx scripts/check-no-samples.ts",
+    "check:translations": "tsx scripts/check-translations.ts"
   },
   "dependencies": {
     "astro": "^7.3.8",
@@ -18,5 +22,8 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

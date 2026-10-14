@@ -1,0 +1,40 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../../layouts/Base.astro";
+import { defaultLanguage } from "../../../config/site";
+import { getPages, getSiteData } from "../../../lib/data";
+import { formatDate } from "../../../lib/format";
+import { t } from "../../../lib/i18n";
+import { pagesOfKind } from "../../../lib/routes";
+import { pickText } from "../../../lib/text";
+
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "news").map((p) => ({ params: { lang: p.lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: string };
+const posts = [...getSiteData().news].sort((a, b) => b.date.localeCompare(a.date));
+// News has no city: fall back to the default language, or the post's first language if it has no default-language text.
+const primaryOf = (languages: string[]) => (languages.includes(defaultLanguage) ? defaultLanguage : (languages[0] as string));
+---
+<Base lang={lang} title={t(lang, "news.title")} description={t(lang, "news.description")} suffix="news/">
+  <h1>{t(lang, "news.heading")}</h1>
+  {posts.length === 0 ? <p>{t(lang, "news.empty")}</p> : (
+    <ul class="cards">
+      {posts.map((p) => {
+        const primary = primaryOf(p.languages);
+        const title = pickText(p.title, lang, primary);
+        const body = pickText(p.body, lang, primary);
+        return (
+          <li class="card">
+            <h2><span>{title.text}</span></h2>
+            <p class="muted"><time datetime={p.date}>{formatDate(p.date, lang)}</time></p>
+            {(title.fellBack || body.fellBack) && (
+              <p class="notice">{t(lang, "listing.fallback", { language: t(lang, "lang.name." + primary) })}</p>
+            )}
+            <p>{body.text}</p>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+</Base>

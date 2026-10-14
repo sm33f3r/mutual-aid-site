@@ -1,0 +1,27 @@
+---
+import type { City } from "../schemas/city";
+import type { Listing, ListingState } from "../schemas/listing";
+import { formatWhen } from "../lib/format";
+import { t } from "../lib/i18n";
+import { listingPath } from "../lib/routes";
+import { pickText } from "../lib/text";
+
+interface Props {
+  lang: string;
+  city: City;
+  listing: Listing;
+  effective: ListingState;
+}
+const { lang, city, listing, effective } = Astro.props;
+const title = pickText(listing.title, lang, city.primaryLanguage).text;
+const when = formatWhen(listing.when, city.timezone, lang);
+---
+<li class="card">
+  <h3><a href={listingPath(lang, city.id, listing.id)}>{title}</a></h3>
+  <p class="meta">
+    <span class={`badge badge-${effective.toLowerCase()}`}>{t(lang, `state.${effective}`)}</span>
+    <span class="badge">{t(lang, `evidence.${listing.evidence}`)}</span>
+  </p>
+  <p>{when}</p>
+  {listing.when.recurrence && <p class="muted">{listing.when.recurrence}</p>}
+</li>

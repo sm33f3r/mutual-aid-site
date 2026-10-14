@@ -1,0 +1,25 @@
+---
+import "../styles/global.css";
+import { languages } from "../config/site";
+import { t } from "../lib/i18n";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t("en", "notfound.title")}</title>
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <main>
+      {languages.map((l) => (
+        <section lang={l}>
+          <h1>{t(l, "notfound.title")}</h1>
+          <p>{t(l, "notfound.body")}</p>
+          <p><a href={`/${l}/`}>{t(l, "notfound.home")}</a></p>
+        </section>
+      ))}
+    </main>
+  </body>
+</html>

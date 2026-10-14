@@ -1,0 +1,58 @@
+---
+import * as giscus from "../config/giscus";
+import { t } from "../lib/i18n";
+
+interface Props {
+  lang: string;
+  listingId: string;
+}
+const { lang, listingId } = Astro.props;
+const enabled = [giscus.repo, giscus.repoId, giscus.category, giscus.categoryId].every((v) => v !== "");
+---
+<section class="comments" aria-labelledby="comments-heading">
+  <h2 id="comments-heading">{t(lang, "comments.heading")}</h2>
+  {!enabled && <p class="muted">{t(lang, "comments.disabled")}</p>}
+  {enabled && (
+    <div
+      id="comments-box"
+      data-repo={giscus.repo}
+      data-repo-id={giscus.repoId}
+      data-category={giscus.category}
+      data-category-id={giscus.categoryId}
+      data-term={`listing:${listingId}`}
+      data-lang={lang}
+    >
+      <p class="muted">{t(lang, "comments.needs_github")}</p>
+      <button type="button" id="comments-show">{t(lang, "comments.show")}</button>
+    </div>
+    <script is:inline>
+      (function () {
+        var box = document.getElementById("comments-box");
+        var btn = document.getElementById("comments-show");
+        if (!box || !btn) return;
+        btn.addEventListener("click", function () {
+          var d = box.dataset;
+          var s = document.createElement("script");
+          s.src = "https://giscus.app/client.js";
+          s.async = true;
+          s.crossOrigin = "anonymous";
+          s.setAttribute("data-repo", d.repo);
+          s.setAttribute("data-repo-id", d.repoId);
+          s.setAttribute("data-category", d.category);
+          s.setAttribute("data-category-id", d.categoryId);
+          s.setAttribute("data-mapping", "specific");
+          s.setAttribute("data-term", d.term);
+          s.setAttribute("data-strict", "1");
+          s.setAttribute("data-reactions-enabled", "0");
+          s.setAttribute("data-emit-metadata", "0");
+          s.setAttribute("data-input-position", "top");
+          s.setAttribute("data-theme", "preferred_color_scheme");
+          s.setAttribute("data-lang", d.lang);
+          s.setAttribute("data-loading", "lazy");
+          btn.remove();
+          box.appendChild(s);
+        });
+      })();
+    </script>
+  )}
+</section>

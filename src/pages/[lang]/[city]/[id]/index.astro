@@ -1,0 +1,94 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../../../layouts/Base.astro";
+import Comments from "../../../../components/Comments.astro";
+import { getPages, getSiteData } from "../../../../lib/data";
+import { formatDate, formatWhen } from "../../../../lib/format";
+import { t } from "../../../../lib/i18n";
+import { cityPath, pagesOfKind, sectionPath } from "../../../../lib/routes";
+import { pickText } from "../../../../lib/text";
+
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "listing").map((p) => ({
+    params: { lang: p.lang, city: p.city, id: p.listing },
+  }))) satisfies GetStaticPaths;
+
+const { lang, city: cityId, id } = Astro.params as { lang: string; city: string; id: string };
+const data = getSiteData();
+const city = data.cities.find((c) => c.id === cityId)!;
+const { listing: l, effective } = data.listings.find((e) => e.listing.id === id)!;
+const pick = (v: Record<string, string>) => pickText(v, lang, city.primaryLanguage);
+
+const title = pick(l.title);
+const free = pick(l.what_is_free);
+const who = pick(l.who_can_attend);
+const venue = pick(l.where.venue);
+const address = pick(l.where.address);
+const note = l.grimple_note ? pick(l.grimple_note) : undefined;
+const fellBack = [title, free, who, venue, address, note].some((p) => p?.fellBack);
+const cityName = pickText(city.name, lang, city.primaryLanguage).text;
+---
+<Base lang={lang} title={title.text} description={free.text} suffix={`${cityId}/${id}/`}>
+  <article>
+    <h1>{title.text}</h1>
+    <p class="meta">
+      <span class={`badge badge-${effective.toLowerCase()}`}>{t(lang, `state.${effective}`)}</span>
+      <span class="badge">{t(lang, `evidence.${l.evidence}`)}</span>
+    </p>
+    {fellBack && (
+      <p class="notice">{t(lang, "listing.fallback", { language: t(lang, "lang.name." + city.primaryLanguage) })}</p>
+    )}
+    <dl>
+      <dt>{t(lang, "listing.what_is_free")}</dt>
+      <dd>{free.text}</dd>
+      <dt>{t(lang, "listing.who_can_attend")}</dt>
+      <dd>{who.text}</dd>
+      <dt>{t(lang, "listing.where")}</dt>
+      <dd>{venue.text}<br />{address.text}</dd>
+      <dt>{t(lang, "listing.when")}</dt>
+      <dd>{formatWhen(l.when, city.timezone, lang)}</dd>
+      {l.when.recurrence && (
+        <>
+          <dt>{t(lang, "listing.recurrence")}</dt>
+          <dd>{l.when.recurrence}</dd>
+        </>
+      )}
+      <dt>{t(lang, "listing.evidence")}</dt>
+      <dd>{t(lang, `evidence.${l.evidence}`)}</dd>
+      <dt>{t(lang, "listing.state")}</dt>
+      <dd>{t(lang, `state.${effective}`)}</dd>
+      <dt>{t(lang, "listing.last_checked")}</dt>
+      <dd><time datetime={l.last_checked}>{formatDate(l.last_checked, lang)}</time></dd>
+      <dt>{t(lang, "listing.expires")}</dt>
+      <dd><time datetime={l.expiry_date}>{formatDate(l.expiry_date, lang)}</time></dd>
+      {l.source_link && (
+        <>
+          <dt>{t(lang, "listing.source")}</dt>
+          <dd>
+            <a
+              href={l.source_link}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              data-track="source-click"
+              data-listing-id={l.id}>{t(lang, "listing.source_open")}</a>
+          </dd>
+        </>
+      )}
+      {l.credit_name && (
+        <>
+          <dt>{t(lang, "listing.credit")}</dt>
+          <dd>{l.credit_name}</dd>
+        </>
+      )}
+      {note && (
+        <>
+          <dt>{t(lang, "listing.note")}</dt>
+          <dd>{note.text}</dd>
+        </>
+      )}
+    </dl>
+    <p><a href={sectionPath(lang, "submit")}>{t(lang, "listing.report")}</a></p>
+    <Comments lang={lang} listingId={l.id} />
+    <p><a href={cityPath(lang, cityId)}>{t(lang, "listing.back", { city: cityName })}</a></p>
+  </article>
+</Base>

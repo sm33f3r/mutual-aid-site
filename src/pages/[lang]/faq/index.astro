@@ -1,0 +1,22 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../../layouts/Base.astro";
+import { getPages } from "../../../lib/data";
+import { t } from "../../../lib/i18n";
+import { pagesOfKind } from "../../../lib/routes";
+
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "faq").map((p) => ({ params: { lang: p.lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: string };
+const topics = ["what", "verify", "report", "tokens"];
+---
+<Base lang={lang} title={t(lang, "faq.title")} description={t(lang, "faq.description")} suffix="faq/">
+  <h1>{t(lang, "faq.heading")}</h1>
+  {topics.map((k) => (
+    <section>
+      <h2>{t(lang, `faq.q.${k}`)}</h2>
+      <p>{t(lang, `faq.a.${k}`)}</p>
+    </section>
+  ))}
+</Base>

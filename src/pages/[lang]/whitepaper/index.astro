@@ -1,0 +1,17 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../../layouts/Base.astro";
+import { getPages } from "../../../lib/data";
+import { t } from "../../../lib/i18n";
+import { pagesOfKind } from "../../../lib/routes";
+
+// No paths (so no page) while whitepaperEnabled is false: buildPages omits the kind.
+export const getStaticPaths = (() =>
+  pagesOfKind(getPages(), "whitepaper").map((p) => ({ params: { lang: p.lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: string };
+---
+<Base lang={lang} title={t(lang, "whitepaper.title")} description={t(lang, "whitepaper.description")} suffix="whitepaper/">
+  <h1>{t(lang, "whitepaper.heading")}</h1>
+  <p>{t(lang, "whitepaper.body")}</p>
+</Base>

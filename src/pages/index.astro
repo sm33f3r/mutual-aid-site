@@ -1,6 +1,27 @@
 ---
+import "../styles/global.css";
+import { languages } from "../config/site";
+import { t } from "../lib/i18n";
 ---
+<!doctype html>
 <html lang="en">
-  <head><meta charset="utf-8" /><title>Mutual Aid DAO</title></head>
-  <body>Placeholder</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t("en", "root.title")}</title>
+    <meta name="description" content={t("en", "home.description")} />
+    <meta name="robots" content="noindex" />
+    <script is:inline>
+      location.replace(/^ko/i.test(navigator.language || "") ? "/ko/" : "/en/");
+    </script>
+  </head>
+  <body>
+    <main>
+      <noscript>
+        <ul class="plain">
+          {languages.map((l) => <li><a href={`/${l}/`} lang={l}>{t(l, "lang.name." + l)}</a></li>)}
+        </ul>
+      </noscript>
+    </main>
+  </body>
 </html>
