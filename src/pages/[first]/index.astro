@@ -20,7 +20,7 @@ const data = getSiteData();
 {kind === "lang-home" ? (
   <Base lang={lang} title={t(lang, "home.title")} description={t(lang, "home.description")} suffix="">
     <h1>{t(lang, "home.heading")}</h1>
-    <p>{t(lang, "home.intro")}</p>
+        {t(lang, "home.intro").split("\n\n").map((para) => <p>{para}</p>)}
     <h2>{t(lang, "home.cities")}</h2>
     <ul class="cards">
       {data.cities.map((c) => {
